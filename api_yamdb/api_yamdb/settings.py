@@ -118,3 +118,7 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+EMAIL_ADMIN = 'admin@yamdb.ru'
+
+AUTH_USER_MODEL = 'users.User'
