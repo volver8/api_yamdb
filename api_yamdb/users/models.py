@@ -2,8 +2,8 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 from .validators import validate_username
-from reviews.constants import (USERNAME_LENGTH,
-                               EMAIL_LEHGTH, ROLES, USER,
+from .constants import (USERNAME_LENGTH,
+                               EMAIL_LENGTH, ROLES, USER,
                                USERNAME_LENGTH)
 
 
@@ -18,7 +18,7 @@ class User(AbstractUser):
     )
     email = models.EmailField(
         'Адрес электронной почты',
-        max_length=EMAIL_LEHGTH,
+        max_length=EMAIL_LENGTH,
         unique=True,
     )
     bio = models.TextField(
