@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,6 +22,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'users.apps.UsersConfig',
+    'reviews.apps.ReviewsConfig',
 ]
 
 MIDDLEWARE = [
@@ -31,9 +35,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'rest_framework',
-    'users.app.AppConfig'
-    'reviews.apps.ReviewsConfig',
 ]
 
 ROOT_URLCONF = 'api_yamdb.urls'
@@ -88,7 +89,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-Ru'
 
 TIME_ZONE = 'UTC'
 
@@ -105,6 +106,7 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = ((BASE_DIR / 'static/'),)
 
+AUTH_USER_MODEL = 'users.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
@@ -125,5 +127,3 @@ SIMPLE_JWT = {
 }
 
 EMAIL_ADMIN = 'admin@yamdb.ru'
-
-AUTH_USER_MODEL = 'users.User'
