@@ -1,6 +1,6 @@
 from django.urls import include, path
 from rest_framework.routers import SimpleRouter
-from .views import CategoryViewSet, GenreViewSet
+from .views import CategoryViewSet, GenreViewSet, TitleViewSet
 
 
 router_v1 = SimpleRouter()
@@ -18,7 +18,7 @@ router_v1.register(
 )
 router_v1.register(
     r'titles',
-    GenreViewSet,
+    TitleViewSet,
     basename='titles'
 )
 
