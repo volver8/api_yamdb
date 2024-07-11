@@ -3,8 +3,10 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from rest_framework import (
-    generics, status, viewsets
+    filters, generics, status, viewsets
 )
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
@@ -17,7 +19,6 @@ from .serializers import (
 )
 
 class SignUpView(generics.CreateAPIView):
-    queryset = User.objects.all()
 
     def post(self, request):
         serializer = SignUpSerializer(data=request.data)
@@ -36,15 +37,24 @@ class SignUpView(generics.CreateAPIView):
             recipient_list=[user.email],
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
+ 
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('id')
     serializer_class = UserSerializer
     permission_classes = (IsAdminOrSuper,)
-    lookup_field = 'username'
+    filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
+    lookup_url_kwarg = 'username'
+    lookup_field = 'username'
     http_method_names = ['get', 'post', 'patch', 'delete']
 
+    @action(
+        detail=False,
+        url_path='me',
+        methods=['get', 'patch'],
+        permission_classes=[IsAuthenticated],
+    )
     def update_profile(self, request):
         serializer = UserSerializer(request.user)
         if request.method == 'PATCH':

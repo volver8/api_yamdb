@@ -3,9 +3,9 @@ import re
 
 
 def validate_username(value):
-    if value.lower() == 'me':
+    if value == 'me':
         raise ValidationError('Имя "me" использовать нельзя')
-    if not re.match(r'^[\w.@+-]+\Z', value):
+    if not re.match(r'[\w.@+-]+\Z$', value):
         raise ValidationError(
             'Запрещённые символы в имени пользователя'
         )
