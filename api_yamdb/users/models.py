@@ -3,8 +3,8 @@ from django.db import models
 
 from .validators import validate_username
 from .constants import (USERNAME_LENGTH,
-                               EMAIL_LENGTH, ROLES, USER,
-                               USERNAME_LENGTH)
+                        EMAIL_LENGTH, ROLES, USER,
+                        USERNAME_LENGTH)
 
 
 
