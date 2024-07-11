@@ -5,6 +5,7 @@ from .views import CategoryViewSet, GenreViewSet
 
 router_v1 = SimpleRouter()
 
+
 router_v1.register(
     r'categories',
     CategoryViewSet,
@@ -15,6 +16,12 @@ router_v1.register(
     GenreViewSet,
     basename='genres'
 )
+router_v1.register(
+    r'titles',
+    GenreViewSet,
+    basename='titles'
+)
+
 
 urlpatterns = [
     path('v1/', include(router_v1.urls)),
