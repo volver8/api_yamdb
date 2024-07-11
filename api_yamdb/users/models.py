@@ -1,8 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.contrib.auth.validators import UnicodeUsernameValidator
 
-from .validators import validate_username
 from .constants import (MAX_LENGTH, ADMIN, MODERATOR,
                         EMAIL_LEHGTH, ROLES, USER)
 
