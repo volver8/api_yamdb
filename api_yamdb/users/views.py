@@ -1,12 +1,13 @@
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
+from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from rest_framework import (
     filters, status, views, viewsets
 )
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
@@ -25,7 +26,6 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminOrSuper,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
-    lookup_url_kwarg = 'username'
     lookup_field = 'username'
     http_method_names = ['get', 'post', 'patch', 'delete']
 
@@ -50,23 +50,30 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class SignUpView(views.APIView):
+    permission_classes = (AllowAny,)
 
     def post(self, request):
         serializer = SignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        confirmation_code = default_token_generator.make_token(user)
-        
+        try:
+            user, created = User.objects.get_or_create(
+                email=serializer.validated_data.get('email'),
+                username=serializer.validated_data.get('username'),
+            )
+        except IntegrityError as error:
+            return Response(f'{error}', status=status.HTTP_400_BAD_REQUEST)
+
         send_mail(
             subject='Код подтверждения',
-            message=f'Код: {confirmation_code}.',
+            message=f'Код: {user.confirmation_code}.',
             from_email=settings.EMAIL_ADMIN,
             recipient_list=[user.email],
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
 
 class AuthTokenView(views.APIView):
+    permission_classes = (AllowAny,)
 
     def post(self, request):
         serializer = TokenSerializer(data=request.data)

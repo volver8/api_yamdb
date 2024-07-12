@@ -1,5 +1,5 @@
-from rest_framework import serializers
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from rest_framework import serializers
 
 from .constants import EMAIL_LEHGTH, MAX_LENGTH
 from .models import User
@@ -15,20 +15,13 @@ class SignUpSerializer(serializers.Serializer):
         max_length=EMAIL_LEHGTH
     )
 
-    class Meta:
-        model = User
-        fields = (
-            'email',
-            'username'
-        )
-
 
 class TokenSerializer(serializers.Serializer):
     username = serializers.CharField(
         max_length=MAX_LENGTH,
-        validators=[validate_username]
     )
     confirmation_code = serializers.CharField()
+
 
 class UserSerializer(serializers.ModelSerializer):
 
@@ -40,6 +33,5 @@ class UserSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'bio',
-            'role'
+            'role',
         )
-

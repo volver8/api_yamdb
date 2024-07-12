@@ -1,13 +1,19 @@
-from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+from django.core import validators
 
-from .constants import (MAX_LENGTH, ADMIN, MODERATOR,
+from .constants import (MAX_LENGTH, ADMIN,
                         EMAIL_LEHGTH, ROLES, USER)
-
 
 
 class User(AbstractUser):
 
+    username = models.CharField(
+        validators=[validators.RegexValidator(regex=r'^[\w.@+\- ]+$'),],
+        max_length=MAX_LENGTH,
+        unique=True,
+        blank=False,
+    )
     email = models.EmailField(
         'Адрес электронной почты',
         max_length=EMAIL_LEHGTH,
@@ -22,7 +28,6 @@ class User(AbstractUser):
         max_length=MAX_LENGTH,
         choices=ROLES,
         default=USER,
-        blank=True
     )
     first_name = models.CharField(
         'Имя',
@@ -41,19 +46,11 @@ class User(AbstractUser):
     )
 
     @property
-    def is_user(self):
-        return self.role == USER
-    
-    @property
     def is_admin(self):
-        return self.role == ADMIN
-
-    @property
-    def is_moderator(self):
-        return self.role == MODERATOR
-    
-    def __str__(self):
-        return self.username
+        return (
+            self.role == ADMIN
+            or self.is_superuser
+        )
 
     class Meta:
         ordering = ('username',)
