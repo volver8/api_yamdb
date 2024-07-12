@@ -48,21 +48,3 @@ class TitleSerializer(serializers.ModelSerializer):
             GenreTitle.objects.create(
                 genre=current_genre, title=title)
         return title
-
-    # def create(self, validated_data):
-    #     # Уберём список достижений из словаря validated_data и сохраним его
-    #     achievements = validated_data.pop('achievements')
-
-    #     # Создадим нового котика пока без достижений, данных нам достаточно
-    #     cat = Cat.objects.create(**validated_data)
-
-    #     # Для каждого достижения из списка достижений
-    #     for achievement in achievements:
-    #         # Создадим новую запись или получим существующий экземпляр из БД
-    #         current_achievement, status = Achievement.objects.get_or_create(
-    #             **achievement)
-    #         # Поместим ссылку на каждое достижение во вспомогательную таблицу
-    #         # Не забыв указать к какому котику оно относится
-    #         GenreTitle.objects.create(
-    #             achievement=current_achievement, cat=cat)
-    #     return cat

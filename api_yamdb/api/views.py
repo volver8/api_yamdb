@@ -1,16 +1,10 @@
 from rest_framework import filters, viewsets
-from rest_framework.permissions import (
-    IsAuthenticated,
-    IsAuthenticatedOrReadOnly,
-    DjangoModelPermissionsOrAnonReadOnly,
-    AllowAny
-)
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from .permissions import IsAdminOrReadOnly
 from .serializers import CategorySerializer, GenreSerializer, TitleSerializer
 from .viewsets import ListCreateDestroyView
 from reviews.models import Category, Genre, Title
-from users.permissions import IsAdminOrSuper
 
 
 class CategoryViewSet(ListCreateDestroyView):
