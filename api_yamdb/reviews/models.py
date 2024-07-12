@@ -35,15 +35,6 @@ class SlugModel(NameModel):
 class Category(SlugModel):
     """Модель категории произведения."""
 
-    name = models.CharField('Название', max_length=NAME_LEN)  # type:ignore
-    slug = models.SlugField(
-        'Идентификатор',
-        max_length=SLUG_LEN,
-        unique=True,
-        help_text='Идентификатор; разрешены символы '
-        'латиницы, цифры, дефис и подчёркивание.'
-    )  # type:ignore
-
     class Meta:
         verbose_name = 'категория'
         verbose_name_plural = 'Категории'
@@ -54,15 +45,6 @@ class Category(SlugModel):
 
 class Genre(SlugModel):
     """Модель жанра произведения."""
-
-    name = models.CharField('Название', max_length=NAME_LEN)  # type:ignore
-    slug = models.SlugField(
-        'Идентификатор',
-        max_length=SLUG_LEN,
-        unique=True,
-        help_text='Идентификатор; разрешены символы '
-        'латиницы, цифры, дефис и подчёркивание.'
-    )  # type:ignore
 
     class Meta:
         verbose_name = 'жанр'
@@ -75,7 +57,6 @@ class Genre(SlugModel):
 class Title(NameModel):
     """Модель произведения."""
 
-    name = models.CharField('Название', max_length=NAME_LEN)  # type:ignore
     year = models.PositiveSmallIntegerField('Год произведения')  # type:ignore
     rating = models.SmallIntegerField('Рейтинг произведения')  # type:ignore
     description = models.TextField(
