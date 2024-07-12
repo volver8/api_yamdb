@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 
 from reviews.models import Category, Genre, GenreTitle, Title
 
@@ -39,12 +38,16 @@ class TitleSerializer(serializers.ModelSerializer):
         model = Title
 
     def create(self, validated_data):
-        genres = validated_data.pop('genres')
+        genres_data = validated_data.pop('genre')
+        category = validated_data.pop('category')
+        category = Category.objects.get_or_create(**category)
+        validated_data['category'] = category
         title = Title.objects.create(**validated_data)
 
-        for genre in genres:
+        for genre in genres_data:
             current_genre, status = Genre.objects.get_or_create(
                 **genre)
             GenreTitle.objects.create(
                 genre=current_genre, title=title)
+
         return title
