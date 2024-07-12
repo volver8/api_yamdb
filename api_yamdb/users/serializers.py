@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.contrib.auth.validators import UnicodeUsernameValidator
 
 from .constants import EMAIL_LEHGTH, MAX_LENGTH
 from .models import User
@@ -8,7 +9,7 @@ from .validators import validate_username
 class SignUpSerializer(serializers.Serializer):
     username = serializers.CharField(
         max_length=MAX_LENGTH,
-        validators=[validate_username]
+        validators=[UnicodeUsernameValidator(), validate_username]
     )
     email = serializers.EmailField(
         max_length=EMAIL_LEHGTH
@@ -18,10 +19,16 @@ class SignUpSerializer(serializers.Serializer):
         model = User
         fields = (
             'email',
-            'username',
+            'username'
         )
 
-    
+
+class TokenSerializer(serializers.Serializer):
+    username = serializers.CharField(
+        max_length=MAX_LENGTH,
+        validators=[validate_username]
+    )
+    confirmation_code = serializers.CharField()
 
 class UserSerializer(serializers.ModelSerializer):
 
@@ -36,8 +43,3 @@ class UserSerializer(serializers.ModelSerializer):
             'role'
         )
 
-class TokenSerializer(serializers.Serializer):
-    username = serializers.RegexField(regex=r'^[\w.@+-]+$',
-                                      max_length=150,
-                                      required=True)
-    confirmation_code = serializers.CharField()
