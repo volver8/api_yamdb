@@ -1,6 +1,7 @@
 from rest_framework import serializers
+from rest_framework.serializers import SlugRelatedField
 
-from reviews.models import Category, Genre, GenreTitle, Title
+from reviews.models import Category, Genre, Title
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -19,35 +20,41 @@ class GenreSerializer(serializers.ModelSerializer):
         model = Genre
 
 
-class TitleSerializer(serializers.ModelSerializer):
-    """Сериалайзер произведений."""
+class TitleWriteSerializer(serializers.ModelSerializer):
+    """Сериализатор произведений на запись."""
 
-    genre = GenreSerializer(many=True)
-    category = CategorySerializer()
+    category = SlugRelatedField(
+        slug_field='slug',
+        queryset=Category.objects.all(),
+    )
+    genre = SlugRelatedField(
+        slug_field='slug',
+        queryset=Genre.objects.all(),
+        many=True,
+    )
 
     class Meta:
-        fields = (
-            'id',
-            'name',
-            'year',
-            'rating',
-            'description',
-            'genre',
-            'category',
-        )
         model = Title
+        fields = ('name', 'year', 'description', 'genre', 'category')
 
-    def create(self, validated_data):
-        genres_data = validated_data.pop('genre')
-        category = validated_data.pop('category')
-        category = Category.objects.get_or_create(**category)
-        validated_data['category'] = category
-        title = Title.objects.create(**validated_data)
+    def to_representation(self, instance):
+        """Представление объекта."""
+        view = self.context.get('view')
+        if not view:
+            raise serializers.ValidationError('Нет view.')
+        return TitleReadSerializer().to_representation(instance)
 
-        for genre in genres_data:
-            current_genre, status = Genre.objects.get_or_create(
-                **genre)
-            GenreTitle.objects.create(
-                genre=current_genre, title=title)
 
-        return title
+class TitleReadSerializer(serializers.ModelSerializer):
+    """Сериализатор произведений на чтение."""
+
+    category = CategorySerializer()
+    genre = GenreSerializer(
+        many=True,
+    )
+    rating = serializers.IntegerField(allow_null=True)
+
+    class Meta:
+        model = Title
+        fields = ('id', 'name', 'year', 'rating', 'description',
+                  'genre', 'category')
