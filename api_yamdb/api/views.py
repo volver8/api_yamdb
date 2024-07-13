@@ -4,7 +4,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 
-from .permissions import IsAdminOrReadOnly
+from .permissions import IsAdminOrReadOnly, AuthorOrReadOnly
 from .serializers import (
     CategorySerializer,
     GenreSerializer,
@@ -69,7 +69,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
     """Вьюсет отзывов"""
 
     serializer_class = ReviewSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, IsAdminOrReadOnly, )
+    permission_classes = (IsAuthenticatedOrReadOnly, AuthorOrReadOnly)
+    http_method_names = ('get', 'post', 'patch', 'delete')
 
     def get_title(self):
         return get_object_or_404(Title, pk=self.kwargs.get('title_id'))
