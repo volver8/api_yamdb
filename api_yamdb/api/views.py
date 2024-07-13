@@ -10,6 +10,7 @@ from rest_framework.mixins import (
 from rest_framework.permissions import (IsAuthenticatedOrReadOnly)
 from rest_framework.viewsets import GenericViewSet
 
+
 from .serializers import (CategorySerializer,
                           GenreSerializer,
                           TitleWriteSerializer,

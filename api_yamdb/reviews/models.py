@@ -81,9 +81,6 @@ class Title(models.Model):
         verbose_name_plural = 'Произведения'
         ordering = [
             '-year',
-            'name',
-            'genre__slug',
-            'category__slug',
         ]
 
     def __str__(self):
