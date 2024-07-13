@@ -1,48 +1,25 @@
 from django.db import models
-
+from django.core import validators
 
 NAME_LEN = 256
 SLUG_LEN = 50
 
 
-class NameModel(models.Model):
-    """Модель поля имени."""
-
-    name = models.CharField('Название', max_length=NAME_LEN)  # type:ignore
-
-    class Meta:
-        abstract = True
-
-    def __str__(self):
-        return self.name
-
-
-class SlugModel(NameModel):
-    """Модель поля слага."""
-
-    slug = models.SlugField(
-        'Идентификатор',
-        max_length=SLUG_LEN,
-        unique=True,
-        help_text='Идентификатор; разрешены символы '
-        'латиницы, цифры, дефис и подчёркивание.'
-    )  # type:ignore
-
-    class Meta:
-        abstract = True
-
-
-class Category(SlugModel):
+class Category(models.Model):
     """Модель категории произведения."""
 
-    name = models.CharField('Название', max_length=NAME_LEN)  # type:ignore
+    name = models.CharField(
+        'Название',
+        max_length=NAME_LEN
+    )
     slug = models.SlugField(
         'Идентификатор',
         max_length=SLUG_LEN,
         unique=True,
+        validators=[validators.RegexValidator(regex=r'^[\w.@+\- ]+$'),],
         help_text='Идентификатор; разрешены символы '
         'латиницы, цифры, дефис и подчёркивание.'
-    )  # type:ignore
+    )  
 
     class Meta:
         verbose_name = 'категория'
@@ -52,10 +29,13 @@ class Category(SlugModel):
         return self.name
 
 
-class Genre(SlugModel):
+class Genre(models.Model):
     """Модель жанра произведения."""
 
-    name = models.CharField('Название', max_length=NAME_LEN)  # type:ignore
+    name = models.CharField(
+        'Название',
+        max_length=NAME_LEN
+        )
     slug = models.SlugField(
         'Идентификатор',
         max_length=SLUG_LEN,
@@ -72,18 +52,20 @@ class Genre(SlugModel):
         return self.name
 
 
-class Title(NameModel):
+class Title(models.Model):
     """Модель произведения."""
 
-    name = models.CharField('Название', max_length=NAME_LEN)  # type:ignore
-    year = models.PositiveSmallIntegerField('Год произведения')  # type:ignore
-    rating = models.SmallIntegerField('Рейтинг произведения')  # type:ignore
+    name = models.CharField(
+        'Название',
+        max_length=NAME_LEN
+    )
+    year = models.IntegerField('Год произведения')
     description = models.TextField(
         'Описание комментария',
         blank=True,
         null=True
-    )  # type:ignore
-    genre = models.ManyToManyField(Genre, through="GenreTitle")  # type:ignore
+    )
+    genre = models.ManyToManyField(Genre, through="GenreTitle")
     category = models.ForeignKey(
         Category,
         on_delete=models.CASCADE,

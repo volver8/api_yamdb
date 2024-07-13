@@ -1,68 +1,56 @@
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
-
-from reviews.models import Category, Genre, GenreTitle, Title
+from reviews.models import Genre, Category, Title
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    """Сериалайзер категории."""
 
     class Meta:
-        fields = ('name', 'slug', )
+        exclude = ('id',)
         model = Category
 
 
 class GenreSerializer(serializers.ModelSerializer):
-    """Сериалайзер жанра."""
 
     class Meta:
-        fields = ('name', 'slug', )
+        exclude = ('id',)
         model = Genre
 
 
-class TitleSerializer(serializers.ModelSerializer):
-    """Сериалайзер произведений."""
+class TitleWriteSerializer(serializers.ModelSerializer):
+    """Сериализатор произведений на запись."""
 
-    genre = GenreSerializer(many=True)
-    category = CategorySerializer()
+    category = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Category.objects.all(),
+    )
+    genre = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Genre.objects.all(),
+        many=True,
+    )
 
     class Meta:
-        fields = (
-            'id',
-            'name',
-            'year',
-            'rating',
-            'description',
-            'genre',
-            'category',
-        )
         model = Title
+        fields = ('name', 'year', 'description', 'genre', 'category')
 
-    def create(self, validated_data):
-        genres = validated_data.pop('genres')
-        title = Title.objects.create(**validated_data)
+    def to_representation(self, instance):
+        """Представление объекта."""
+        view = self.context.get('view')
+        if not view:
+            raise serializers.ValidationError('Нет view.')
+        return TitleReadSerializer().to_representation(instance)
 
-        for genre in genres:
-            current_genre, status = Genre.objects.get_or_create(
-                **genre)
-            GenreTitle.objects.create(
-                genre=current_genre, title=title)
-        return title
 
-    # def create(self, validated_data):
-    #     # Уберём список достижений из словаря validated_data и сохраним его
-    #     achievements = validated_data.pop('achievements')
+class TitleReadSerializer(serializers.ModelSerializer):
+    """Сериализатор произведений на чтение."""
 
-    #     # Создадим нового котика пока без достижений, данных нам достаточно
-    #     cat = Cat.objects.create(**validated_data)
+    category = CategorySerializer()
+    genre = GenreSerializer(
+        many=True,
+    )
+    rating = serializers.IntegerField(allow_null=True)
 
-    #     # Для каждого достижения из списка достижений
-    #     for achievement in achievements:
-    #         # Создадим новую запись или получим существующий экземпляр из БД
-    #         current_achievement, status = Achievement.objects.get_or_create(
-    #             **achievement)
-    #         # Поместим ссылку на каждое достижение во вспомогательную таблицу
-    #         # Не забыв указать к какому котику оно относится
-    #         GenreTitle.objects.create(
-    #             achievement=current_achievement, cat=cat)
-    #     return cat
+    class Meta:
+        model = Title
+        fields = ('id', 'name', 'year', 'rating', 'description',
+                  'genre', 'category')
