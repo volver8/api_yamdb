@@ -1,5 +1,7 @@
 from django.db import models
 
+from users.models import User
+
 
 NAME_LEN = 256
 SLUG_LEN = 50
@@ -80,3 +82,17 @@ class Title(NameModel):
             'genre__slug',
             'category__slug',
         ]
+
+
+class Review(models.Model):
+    text = models.TextField()
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='reviews'
+    )
+    score = models.IntegerField()
+    pub_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Отзыв'
+        verbose_name_plural = 'Отзывы'
+        ordering = ('pub_date',)
