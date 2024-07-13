@@ -10,11 +10,12 @@ from .serializers import (
     GenreSerializer,
     TitleWriteSerializer,
     TitleReadSerializer,
-    ReviewSerializer
+    ReviewSerializer,
+    CommentSerializer
 )
 from .viewsets import ListCreateDestroyView
 from .filters import TitlesFilter
-from reviews.models import Category, Genre, Title
+from reviews.models import Category, Genre, Title, Review
 
 
 class CategoryViewSet(ListCreateDestroyView):
@@ -66,7 +67,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-    """Вьюсет отзывов"""
+    """Вьюсет отзывов."""
 
     serializer_class = ReviewSerializer
     permission_classes = (IsAuthenticatedOrReadOnly, AuthorOrReadOnly)
@@ -80,3 +81,20 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user, title=self.get_title())
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    """Вьюсет комментариев."""
+
+    serializer_class = CommentSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly, AuthorOrReadOnly)
+    http_method_names = ('get', 'post', 'patch', 'delete')
+
+    def get_review(self):
+        return get_object_or_404(Review, pk=self.kwargs.get('review_id'))
+
+    def get_queryset(self):
+        return self.get_review().comments.all()
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user, review=self.get_review())
