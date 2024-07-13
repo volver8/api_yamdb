@@ -39,9 +39,7 @@ class TitleWriteSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         """Представление объекта."""
-        view = self.context.get('view')
-        if not view:
-            raise serializers.ValidationError('Нет view.')
+
         return TitleReadSerializer().to_representation(instance)
 
 

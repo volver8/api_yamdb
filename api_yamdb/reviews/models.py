@@ -12,7 +12,7 @@ User = get_user_model()
 class NameModel(models.Model):
     """Модель поля имени."""
 
-    name = models.CharField('Название', max_length=NAME_LEN)  # type:ignore
+    name = models.CharField('Название', max_length=NAME_LEN)
 
     class Meta:
         abstract = True
@@ -30,7 +30,7 @@ class SlugModel(NameModel):
         unique=True,
         help_text='Идентификатор; разрешены символы '
         'латиницы, цифры, дефис и подчёркивание.'
-    )  # type:ignore
+    )
 
     class Meta:
         abstract = True
@@ -61,22 +61,22 @@ class Genre(SlugModel):
 class Title(NameModel):
     """Модель произведения."""
 
-    year = models.PositiveSmallIntegerField('Год произведения')  # type:ignore
+    year = models.PositiveSmallIntegerField('Год произведения')
     description = models.TextField(
         'Описание комментария',
         blank=True,
         null=True
-    )  # type:ignore
+    )
     genre = models.ManyToManyField(
         Genre,
         through="GenreTitle"
-    )  # type:ignore
+    )
     category = models.ForeignKey(
         Category,
         on_delete=models.CASCADE,
         verbose_name='Категория публикации',
         related_name='titles'
-    )  # type:ignore
+    )
 
     class Meta:
         verbose_name = 'произведение'
@@ -87,8 +87,8 @@ class Title(NameModel):
 
 
 class GenreTitle(models.Model):
-    genre = models.ForeignKey(Genre, on_delete=models.CASCADE)  # type:ignore
-    title = models.ForeignKey(Title, on_delete=models.CASCADE)  # type:ignore
+    genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
+    title = models.ForeignKey(Title, on_delete=models.CASCADE)
 
 
 class Review(models.Model):
@@ -96,14 +96,14 @@ class Review(models.Model):
         Title,
         on_delete=models.CASCADE,
         related_name='reviews',
-    )  # type:ignore
+    )
 
-    text = models.TextField()  # type:ignore
+    text = models.TextField()
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='reviews'
-    )  # type:ignore
-    score = models.IntegerField()  # type:ignore
-    pub_date = models.DateTimeField(auto_now_add=True)  # type:ignore
+    )
+    score = models.IntegerField()
+    pub_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = 'Отзыв'
