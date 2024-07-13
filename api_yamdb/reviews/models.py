@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth import get_user_model
 
 
 NAME_LEN = 256
@@ -57,19 +58,20 @@ class Genre(SlugModel):
         return self.name
 
 
-class Title(NameModel):
+class Title(models.Model):
     """Модель произведения."""
 
-    year = models.PositiveSmallIntegerField('Год произведения')
+    name = models.CharField(
+        'Название',
+        max_length=NAME_LEN
+    )
+    year = models.IntegerField('Год произведения')
     description = models.TextField(
         'Описание комментария',
         blank=True,
         null=True
     )
-    genre = models.ManyToManyField(
-        Genre,
-        through="GenreTitle"
-    )
+    genre = models.ManyToManyField(Genre, through="GenreTitle")
     category = models.ForeignKey(
         Category,
         on_delete=models.CASCADE,
@@ -82,7 +84,32 @@ class Title(NameModel):
         verbose_name_plural = 'Произведения'
         ordering = [
             '-year',
-            'name',
-            'genre__slug',
-            'category__slug',
         ]
+
+    def __str__(self):
+        return self.name
+
+
+class GenreTitle(models.Model):
+    genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
+    title = models.ForeignKey(Title, on_delete=models.CASCADE)
+
+
+class Review(models.Model):
+    title = models.ForeignKey(
+        Title,
+        on_delete=models.CASCADE,
+        related_name='reviews',
+    )
+
+    text = models.TextField()
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='reviews'
+    )
+    score = models.IntegerField()
+    pub_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Отзыв'
+        verbose_name_plural = 'Отзывы'
+        ordering = ('pub_date',)
