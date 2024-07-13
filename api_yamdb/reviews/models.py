@@ -1,6 +1,8 @@
 from django.db import models
 from django.core import validators
 
+from users.models import User
+
 NAME_LEN = 256
 SLUG_LEN = 50
 
@@ -65,6 +67,7 @@ class Title(models.Model):
         blank=True,
         null=True
     )
+    #rating = models.SmallIntegerField('Рейтинг произведения')
     genre = models.ManyToManyField(Genre, through="GenreTitle")
     category = models.ForeignKey(
         Category,
@@ -90,3 +93,22 @@ class Title(models.Model):
 class GenreTitle(models.Model):
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE)  # type:ignore
     title = models.ForeignKey(Title, on_delete=models.CASCADE)  # type:ignore
+
+class Review(models.Model):
+    title = models.ForeignKey(
+        Title,
+        on_delete=models.CASCADE,
+        related_name='reviews',
+    )
+
+    text = models.TextField()
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='reviews'
+    )
+    score = models.IntegerField()
+    pub_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Отзыв'
+        verbose_name_plural = 'Отзывы'
+        ordering = ('pub_date',)

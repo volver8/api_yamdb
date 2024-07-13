@@ -17,27 +17,29 @@ from .serializers import (CategorySerializer,
 from reviews.models import Category, Genre, Title
 from .permissions import IsAdminOrReadOnly
 from .filters import TitlesFilter
+from .viewsets import ListCreateDestroyView
 
 
-class CategoryViewSet(CreateModelMixin, ListModelMixin,
-                      DestroyModelMixin, GenericViewSet):
+class CategoryViewSet(ListCreateDestroyView):
+    """Вьюсет категорий."""
+
+    permission_classes = (IsAuthenticatedOrReadOnly, IsAdminOrReadOnly, )
     queryset = Category.objects.all()
+    lookup_field = 'slug'
+    filter_backends = (filters.SearchFilter, )
+    search_fields = ('name', )
     serializer_class = CategorySerializer
-    permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = (TitlesFilter,)
-    search_fields = ('name',)
-    lookup_field = 'slug'
 
 
-class GenreViewSet(CreateModelMixin, ListModelMixin,
-                   DestroyModelMixin, GenericViewSet):
+class GenreViewSet(ListCreateDestroyView):
+    """Вьюсет жанров."""
+
+    permission_classes = (IsAuthenticatedOrReadOnly, IsAdminOrReadOnly, )
     queryset = Genre.objects.all()
-    serializer_class = GenreSerializer
-    permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = (TitlesFilter,)
-    search_fields = ('name',)
     lookup_field = 'slug'
-
+    filter_backends = (filters.SearchFilter, )
+    search_fields = ('name', )
+    serializer_class = GenreSerializer
 
 class TitleViewSet(viewsets.ModelViewSet):
     """Обработка произведений."""
