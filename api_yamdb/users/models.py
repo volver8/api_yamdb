@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core import validators
 
 from .constants import (MAX_LENGTH, ADMIN,
-                        EMAIL_LEHGTH, ROLES, USER)
+                        EMAIL_LEHGTH, ROLES, USER, MODERATOR)
 
 
 class User(AbstractUser):
@@ -49,6 +49,13 @@ class User(AbstractUser):
     def is_admin(self):
         return (
             self.role == ADMIN
+            or self.is_superuser
+        )
+
+    @property
+    def is_moderator(self):
+        return (
+            self.role == MODERATOR
             or self.is_superuser
         )
 

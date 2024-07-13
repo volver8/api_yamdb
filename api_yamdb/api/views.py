@@ -2,13 +2,15 @@ from rest_framework import filters, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Avg
+from django.shortcuts import get_object_or_404
 
-from .permissions import IsAdminOrReadOnly
+from .permissions import IsAdminOrReadOnly, AuthorOrReadOnly
 from .serializers import (
     CategorySerializer,
     GenreSerializer,
     TitleWriteSerializer,
-    TitleReadSerializer
+    TitleReadSerializer,
+    ReviewSerializer
 )
 from .viewsets import ListCreateDestroyView
 from .filters import TitlesFilter
@@ -61,3 +63,20 @@ class TitleViewSet(viewsets.ModelViewSet):
                 rating=Avg('reviews__score')
             )
         return Title.objects.all()
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    """Вьюсет отзывов"""
+
+    serializer_class = ReviewSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly, AuthorOrReadOnly)
+    http_method_names = ('get', 'post', 'patch', 'delete')
+
+    def get_title(self):
+        return get_object_or_404(Title, pk=self.kwargs.get('title_id'))
+
+    def get_queryset(self):
+        return self.get_title().reviews.all()
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user, title=self.get_title())

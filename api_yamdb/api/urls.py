@@ -2,7 +2,7 @@ from django.urls import include, path
 from rest_framework.routers import SimpleRouter
 
 from users.views import AuthTokenView, SignUpView, UserViewSet
-from .views import CategoryViewSet, GenreViewSet, TitleViewSet
+from .views import CategoryViewSet, GenreViewSet, TitleViewSet, ReviewViewSet
 
 
 router_v1 = SimpleRouter()
@@ -26,6 +26,11 @@ router_v1.register(
     r'titles',
     TitleViewSet,
     basename='titles'
+)
+router_v1.register(
+    r'titles/(?P<title_id>\d+)/reviews',
+    ReviewViewSet,
+    basename='reviews'
 )
 
 
