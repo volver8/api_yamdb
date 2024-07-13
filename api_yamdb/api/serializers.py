@@ -67,3 +67,20 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'text', 'author', 'score', 'pub_date')
         model = Review
+
+    def validate(self, data):
+        if self.context['view'].action == 'create':
+            user = self.context.get('request').user
+            title = self.context.get('view').kwargs.get('title_id')
+            if Review.objects.filter(
+                author=user,
+                title=title
+            ):
+                raise serializers.ValidationError(
+                    'Такой отзыв уже есть!'
+                )
+        if data['score'] > 10:
+            raise serializers.ValidationError(
+                'Оценка не может быть выше 10!'
+            )
+        return data
