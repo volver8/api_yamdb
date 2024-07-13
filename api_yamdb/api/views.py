@@ -7,6 +7,7 @@ from rest_framework.mixins import (
     ListModelMixin,
     DestroyModelMixin,
 )
+from rest_framework.permissions import (IsAuthenticatedOrReadOnly)
 from rest_framework.viewsets import GenericViewSet
 
 from .serializers import (CategorySerializer,
@@ -41,7 +42,7 @@ class GenreViewSet(CreateModelMixin, ListModelMixin,
 class TitleViewSet(viewsets.ModelViewSet):
     """Обработка произведений."""
 
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (IsAdminOrReadOnly,IsAuthenticatedOrReadOnly,)
     filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
     filterset_class = TitlesFilter
     http_method_names = ('get', 'post', 'patch', 'delete')
