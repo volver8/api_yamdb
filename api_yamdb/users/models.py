@@ -9,7 +9,7 @@ from .constants import (MAX_LENGTH, ADMIN,
 class User(AbstractUser):
 
     username = models.CharField(
-        validators=[validators.RegexValidator(regex=r'^[\w.@+\- ]+$'),],
+        validators=[validators.RegexValidator(regex=r'^[\w.@+\- ]+$'), ],
         max_length=MAX_LENGTH,
         unique=True,
         blank=False,
