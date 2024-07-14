@@ -21,7 +21,7 @@ from reviews.models import Category, Genre, Title, Review
 class CategoryViewSet(ListCreateDestroyView):
     """Вьюсет категорий."""
 
-    permission_classes = (IsAdminOrReadOnly, )
+    permission_classes = (IsAuthenticatedOrReadOnly,IsAdminOrReadOnly, )
     queryset = Category.objects.all()
     lookup_field = 'slug'
     filter_backends = (filters.SearchFilter, )
