@@ -21,7 +21,7 @@ from reviews.models import Category, Genre, Title, Review
 class CategoryViewSet(ListCreateDestroyView):
     """Вьюсет категорий."""
 
-    permission_classes = (IsAuthenticatedOrReadOnly, IsAdminOrReadOnly, )
+    permission_classes = (IsAdminOrReadOnly, )
     queryset = Category.objects.all()
     lookup_field = 'slug'
     filter_backends = (filters.SearchFilter, )
@@ -32,7 +32,7 @@ class CategoryViewSet(ListCreateDestroyView):
 class GenreViewSet(ListCreateDestroyView):
     """Вьюсет жанров."""
 
-    permission_classes = (IsAuthenticatedOrReadOnly, IsAdminOrReadOnly, )
+    permission_classes = (IsAdminOrReadOnly, )
     queryset = Genre.objects.all()
     lookup_field = 'slug'
     filter_backends = (filters.SearchFilter, )
@@ -43,7 +43,7 @@ class GenreViewSet(ListCreateDestroyView):
 class TitleViewSet(viewsets.ModelViewSet):
     """Обработка произведений."""
 
-    permission_classes = (IsAuthenticatedOrReadOnly, IsAdminOrReadOnly, )
+    permission_classes = (IsAdminOrReadOnly, )
     filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
     filterset_class = TitlesFilter
     http_method_names = ('get', 'post', 'patch', 'delete')
