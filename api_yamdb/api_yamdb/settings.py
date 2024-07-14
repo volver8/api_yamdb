@@ -1,5 +1,4 @@
 from pathlib import Path
-import os
 from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -92,7 +91,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 
-LANGUAGE_CODE = 'ru-Ru'
+LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
