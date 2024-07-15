@@ -63,9 +63,10 @@ class SignUpView(views.APIView):
         except IntegrityError as error:
             return Response(f'{error}', status=status.HTTP_400_BAD_REQUEST)
 
+        confirmation_code = default_token_generator.make_token(user)
         send_mail(
             subject='Код подтверждения',
-            message=f'Код: {user.confirmation_code}.',
+            message=f'Код: {confirmation_code}.',
             from_email=settings.EMAIL_ADMIN,
             recipient_list=[user.email],
         )
