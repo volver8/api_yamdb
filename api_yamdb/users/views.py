@@ -81,7 +81,6 @@ class AuthTokenView(views.APIView):
         username = serializer.validated_data['username']
         confirmation_code = serializer.validated_data['confirmation_code']
         user = get_object_or_404(User, username=username)
-
         if not default_token_generator.check_token(user, confirmation_code):
             return Response(
                 {'confirmation_code': ['Код подтверждения неверный']},
