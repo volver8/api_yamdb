@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.serializers import SlugRelatedField
 
@@ -71,7 +72,9 @@ class ReviewSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if self.context['view'].action == 'create':
             user = self.context.get('request').user
-            title = self.context.get('view').kwargs.get('title_id')
+            title = get_object_or_404(
+                Title, pk=self.context.get('view').kwargs.get('title_id')
+            )
             if Review.objects.filter(
                 author=user,
                 title=title
@@ -79,10 +82,6 @@ class ReviewSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     'Такой отзыв уже есть!'
                 )
-        if data['score'] > 10:
-            raise serializers.ValidationError(
-                'Оценка не может быть выше 10!'
-            )
         return data
 
 

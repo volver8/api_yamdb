@@ -1,9 +1,9 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
 
-
-NAME_LEN = 256
-SLUG_LEN = 50
+from .constants import NAME_LEN, SLUG_LEN
+from .validators import validation_year
 
 
 User = get_user_model()
@@ -21,7 +21,7 @@ class NameModel(models.Model):
         return self.name
 
 
-class SlugModel(NameModel):
+class SlugModel(models.Model):
     """Модель поля слага."""
 
     slug = models.SlugField(
@@ -36,7 +36,7 @@ class SlugModel(NameModel):
         abstract = True
 
 
-class Category(SlugModel):
+class Category(NameModel, SlugModel):
     """Модель категории произведения."""
 
     class Meta:
@@ -47,7 +47,7 @@ class Category(SlugModel):
         return self.name
 
 
-class Genre(SlugModel):
+class Genre(NameModel, SlugModel):
     """Модель жанра произведения."""
 
     class Meta:
@@ -58,20 +58,24 @@ class Genre(SlugModel):
         return self.name
 
 
-class Title(models.Model):
+class Title(NameModel):
     """Модель произведения."""
 
-    name = models.CharField(
-        'Название',
-        max_length=NAME_LEN
+    year = models.IntegerField(
+        'Год произведения',
+        validators=(validation_year, )
     )
-    year = models.IntegerField('Год произведения')
     description = models.TextField(
         'Описание комментария',
         blank=True,
         null=True
     )
-    genre = models.ManyToManyField(Genre, through="GenreTitle")
+    genre = models.ManyToManyField(
+        Genre,
+        related_name='titles',
+        verbose_name='Жанры',
+        blank=True
+    )
     category = models.ForeignKey(
         Category,
         on_delete=models.CASCADE,
@@ -90,12 +94,9 @@ class Title(models.Model):
         return self.name
 
 
-class GenreTitle(models.Model):
-    genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
-    title = models.ForeignKey(Title, on_delete=models.CASCADE)
-
-
 class Review(models.Model):
+    """Модель отзыва."""
+    
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
@@ -106,7 +107,11 @@ class Review(models.Model):
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='reviews'
     )
-    score = models.IntegerField()
+    score = models.IntegerField(
+        validators=[
+            MaxValueValidator(10, message='Оценка не может быть выше 10!'),
+            MinValueValidator(1, message='Оценка не может быть ниже 1!')]
+    )
     pub_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -115,8 +120,13 @@ class Review(models.Model):
         verbose_name_plural = 'Отзывы'
         ordering = ('pub_date',)
 
+    def __str__(self):
+        return self.text
+
 
 class Comment(models.Model):
+    """Модель комментария."""
+    
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
@@ -132,3 +142,6 @@ class Comment(models.Model):
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
         ordering = ('pub_date',)
+
+    def __str__(self):
+        return self.text

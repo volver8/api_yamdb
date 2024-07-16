@@ -13,30 +13,22 @@ from .serializers import (
     ReviewSerializer,
     CommentSerializer
 )
-from .viewsets import ListCreateDestroyView
+from .viewsets import CategoryGenreViewSet
 from .filters import TitlesFilter
 from reviews.models import Category, Genre, Title, Review
 
 
-class CategoryViewSet(ListCreateDestroyView):
+class CategoryViewSet(CategoryGenreViewSet):
     """Вьюсет категорий."""
 
-    permission_classes = (IsAdminOrReadOnly, )
     queryset = Category.objects.all()
-    lookup_field = 'slug'
-    filter_backends = (filters.SearchFilter, )
-    search_fields = ('name', )
     serializer_class = CategorySerializer
 
 
-class GenreViewSet(ListCreateDestroyView):
+class GenreViewSet(CategoryGenreViewSet):
     """Вьюсет жанров."""
 
-    permission_classes = (IsAdminOrReadOnly, )
     queryset = Genre.objects.all()
-    lookup_field = 'slug'
-    filter_backends = (filters.SearchFilter, )
-    search_fields = ('name', )
     serializer_class = GenreSerializer
 
 
@@ -52,7 +44,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         """Выбор сериализатора."""
 
-        if self.action in {'list', 'retrieve'}:
+        if self.action in ('list', 'retrieve'):
             return TitleReadSerializer
         return TitleWriteSerializer
 
@@ -91,7 +83,11 @@ class CommentViewSet(viewsets.ModelViewSet):
     http_method_names = ('get', 'post', 'patch', 'delete')
 
     def get_review(self):
-        return get_object_or_404(Review, pk=self.kwargs.get('review_id'))
+        return get_object_or_404(
+            Review,
+            pk=self.kwargs.get('review_id'),
+            title=self.kwargs.get('title_id')
+        )
 
     def get_queryset(self):
         return self.get_review().comments.all()

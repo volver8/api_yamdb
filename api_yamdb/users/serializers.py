@@ -6,20 +6,40 @@ from .models import User
 from .validators import validate_username
 
 
-class SignUpSerializer(serializers.Serializer):
+class UsernameValidators(serializers.Serializer):
     username = serializers.CharField(
         max_length=MAX_LENGTH,
         validators=[UnicodeUsernameValidator(), validate_username]
     )
+
+
+class SignUpSerializer(UsernameValidators):
     email = serializers.EmailField(
         max_length=EMAIL_LEHGTH
     )
 
+    def validate(self, validated_data):
+        email = validated_data.get('email')
+        username = validated_data.get('username')
+        if User.objects.filter(
+            email=email
+        ).exclude(
+            username=username
+        ):
+            raise serializers.ValidationError(
+                'Почта с таким именем уже существует.'
+            )
+        if User.objects.filter(
+            username=username
+        ).exclude(
+            email=email
+        ):
+            raise serializers.ValidationError(
+                'Пользователь с таким именем уже существует.')
+        return validated_data
 
-class TokenSerializer(serializers.Serializer):
-    username = serializers.CharField(
-        max_length=MAX_LENGTH,
-    )
+
+class TokenSerializer(UsernameValidators):
     confirmation_code = serializers.CharField()
 
 
