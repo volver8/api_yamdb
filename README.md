@@ -1,21 +1,54 @@
 # Api_yamdb
 
-## Description
-*This API implements a backend for a web application*
+## Описание проекта.
+*В данном проекте будет реализоваться возможность создания произведений пользователями с разными права доступа.*
+*Также можно выбрать критерии произведения, создать на них обзоры с комментариями.*
 
-*API documentation:* [http://127.0.0.1:8000/redoc/](http://127.0.0.1:8000/redoc/)
+## Документация проекта.
+*Адрес документации проекта:* [http://127.0.0.1:8000/redoc/](http://127.0.0.1:8000/redoc/)
 
 ![](https://www.ibexa.co/var/site/storage/images/_aliases/ibexa_content_full/3/4/1/0/300143-1-eng-GB/d4255a27c1fa-AdobeStock_261705271_What-is-an-API.jpeg)
 
-This API implements serialization and deserialization of data in models such as:
-- Category
-- Genre
-- Title
-- Review
-- Comment
-- User
+## Алгоритм запуска проекта.
+*Адрес репозитория:*
+```
+https://github.com/volver8/api_yamdb
+```
+*Клонировать репозиторий по SSH-ключу:*
+```
+git clone 'SSH_ключ_проекта'
+```
+*Перейти в папку проекта: api_yamdb.*
+*Развернуть виртуальное окружени:*
+```
+python -m venv venv
+```
+*Активировать виртуальное окружение:*
+```
+source venv/Scripts/activate
+```
+*Установка зависимостей из файла requirements.txt:*
+```
+pip install -r requirements.txt
+```
+*Выполнить миграции:*
+```
+python manage.py migrate
+```
+*Перейти в папку api_yamdb:*
+```
+cd api_yamdb
+```
+*Запустить сервер*
+```
+python manage.py runserver 
+```
 
-## Requests
+## Импорт данных из csv.
+```
+python manage.py load_csv
+```
+## Примеры запросов.
 There are some examples of requests:
   -  Model Title
 
@@ -65,8 +98,8 @@ There are some examples of requests:
         }
         ```
 
-## Developers:
+## Разработчики:
 
-- Vladimir Rusakov
-- Evgeny Kudryashov
-- Evgeny Cherednichenko
+- Vladimir Rusakov: https://github.com/volver8
+- Evgeny Kudryashov: https://github.com/GagarinRu
+- Evgeny Cherednichenko: https://github.com/Moreggg
