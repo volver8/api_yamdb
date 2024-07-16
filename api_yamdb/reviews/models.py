@@ -1,5 +1,6 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
 
 
 NAME_LEN = 256
@@ -106,7 +107,11 @@ class Review(models.Model):
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='reviews'
     )
-    score = models.IntegerField()
+    score = models.IntegerField(
+        validators=[
+            MaxValueValidator(10, message='Оценка не может быть выше 10!'),
+            MinValueValidator(1, message='Оценка не может быть ниже 1!')]
+    )
     pub_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -114,6 +119,9 @@ class Review(models.Model):
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
         ordering = ('pub_date',)
+
+    def __str__(self):
+        return self.text
 
 
 class Comment(models.Model):
@@ -132,3 +140,6 @@ class Comment(models.Model):
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
         ordering = ('pub_date',)
+
+    def __str__(self):
+        return self.text
