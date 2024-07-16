@@ -2,9 +2,8 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-
-NAME_LEN = 256
-SLUG_LEN = 50
+from .constants import NAME_LEN, SLUG_LEN
+from .validators import validation_year
 
 
 User = get_user_model()
@@ -22,7 +21,7 @@ class NameModel(models.Model):
         return self.name
 
 
-class SlugModel(NameModel):
+class SlugModel(models.Model):
     """Модель поля слага."""
 
     slug = models.SlugField(
@@ -37,7 +36,7 @@ class SlugModel(NameModel):
         abstract = True
 
 
-class Category(SlugModel):
+class Category(NameModel, SlugModel):
     """Модель категории произведения."""
 
     class Meta:
@@ -48,7 +47,7 @@ class Category(SlugModel):
         return self.name
 
 
-class Genre(SlugModel):
+class Genre(NameModel, SlugModel):
     """Модель жанра произведения."""
 
     class Meta:
@@ -59,20 +58,24 @@ class Genre(SlugModel):
         return self.name
 
 
-class Title(models.Model):
+class Title(NameModel):
     """Модель произведения."""
 
-    name = models.CharField(
-        'Название',
-        max_length=NAME_LEN
+    year = models.IntegerField(
+        'Год произведения',
+        validators=(validation_year, )
     )
-    year = models.IntegerField('Год произведения')
     description = models.TextField(
         'Описание комментария',
         blank=True,
         null=True
     )
-    genre = models.ManyToManyField(Genre, through="GenreTitle")
+    genre = models.ManyToManyField(
+        Genre,
+        related_name='titles',
+        verbose_name='Жанры',
+        blank=True
+    )
     category = models.ForeignKey(
         Category,
         on_delete=models.CASCADE,
@@ -89,11 +92,6 @@ class Title(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class GenreTitle(models.Model):
-    genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
-    title = models.ForeignKey(Title, on_delete=models.CASCADE)
 
 
 class Review(models.Model):
