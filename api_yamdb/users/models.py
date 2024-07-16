@@ -1,22 +1,25 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.core import validators
+from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.utils.translation import gettext_lazy as _
 
-from .constants import (MAX_LENGTH, ADMIN,
-                        EMAIL_LEHGTH, ROLES, USER, MODERATOR)
+from .constants import MAX_LENGTH
+from .validators import validate_username
 
 
 class User(AbstractUser):
+    class RoleChoice(models.TextChoices):
+        USER = 'user', _('Пользователь')
+        MODERATOR = 'moderator', _('Модератор')
+        ADMIN = 'admin', _('Администратор')
 
     username = models.CharField(
-        validators=[validators.RegexValidator(regex=r'^[\w.@+\- ]+$'), ],
+        validators=[UnicodeUsernameValidator(), validate_username],
         max_length=MAX_LENGTH,
         unique=True,
-        blank=False,
     )
     email = models.EmailField(
         'Адрес электронной почты',
-        max_length=EMAIL_LEHGTH,
         unique=True
     )
     bio = models.TextField(
@@ -26,8 +29,8 @@ class User(AbstractUser):
     role = models.CharField(
         'Роль',
         max_length=MAX_LENGTH,
-        choices=ROLES,
-        default=USER,
+        choices=RoleChoice.choices,
+        default=RoleChoice.USER,
     )
     first_name = models.CharField(
         'Имя',
@@ -39,23 +42,18 @@ class User(AbstractUser):
         max_length=MAX_LENGTH,
         blank=True
     )
-    confirmation_code = models.CharField(
-        'Код подтверждения',
-        max_length=MAX_LENGTH,
-        null=True
-    )
 
     @property
     def is_admin(self):
         return (
-            self.role == ADMIN
+            self.role == self.RoleChoice.ADMIN
             or self.is_superuser
         )
 
     @property
     def is_moderator(self):
         return (
-            self.role == MODERATOR
+            self.role == self.RoleChoice.MODERATOR
             or self.is_superuser
         )
 
@@ -63,3 +61,6 @@ class User(AbstractUser):
         ordering = ('username',)
         verbose_name = 'пользователь'
         verbose_name_plural = 'пользователи'
+
+    def __str__(self):
+        return self.username

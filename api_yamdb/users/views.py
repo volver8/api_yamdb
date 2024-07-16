@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
-from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from rest_framework import (
     filters, status, views, viewsets
@@ -12,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
 from .models import User
-from .permissions import IsAdminOrSuper
+from api.permissions import IsAdminOrSuper
 from .serializers import (
     SignUpSerializer,
     TokenSerializer,
@@ -55,14 +54,10 @@ class SignUpView(views.APIView):
     def post(self, request):
         serializer = SignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        try:
-            user, created = User.objects.get_or_create(
-                email=serializer.validated_data.get('email'),
-                username=serializer.validated_data.get('username'),
-            )
-        except IntegrityError as error:
-            return Response(f'{error}', status=status.HTTP_400_BAD_REQUEST)
-
+        user, _ = User.objects.get_or_create(
+            email=serializer.validated_data.get('email'),
+            username=serializer.validated_data.get('username'),
+        )
         confirmation_code = default_token_generator.make_token(user)
         send_mail(
             subject='Код подтверждения',
