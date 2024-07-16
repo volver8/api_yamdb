@@ -54,7 +54,6 @@ class User(AbstractUser):
     def is_moderator(self):
         return (
             self.role == self.RoleChoice.MODERATOR
-            or self.is_superuser
         )
 
     class Meta:
