@@ -9,7 +9,7 @@ from .views import (CategoryViewSet, GenreViewSet, TitleViewSet, ReviewViewSet,
 router_v1 = SimpleRouter()
 
 router_v1.register(
-    r'users',
+    'users',
     UserViewSet,
     basename='users'
 )
@@ -39,9 +39,12 @@ router_v1.register(
     basename='comments'
 )
 
+auth_urlpatterns = [
+    path('token/', AuthTokenView.as_view(), name='auth_token'),
+    path('signup/', SignUpView.as_view(), name='signup'),
+]
 
 urlpatterns = [
     path('v1/', include(router_v1.urls)),
-    path('v1/auth/token/', AuthTokenView.as_view(), name='auth_token'),
-    path('v1/auth/signup/', SignUpView.as_view(), name='signup'),
+    path('v1/auth/', include(auth_urlpatterns)),
 ]
