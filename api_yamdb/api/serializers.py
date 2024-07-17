@@ -1,8 +1,64 @@
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.serializers import SlugRelatedField
 
 from reviews.models import Category, Genre, Title, Review, Comment
+from users.models import User
+from users.constants import EMAIL_LEHGTH, MAX_LENGTH
+from users.validators import validate_username
+
+
+class UsernameSerializer(serializers.Serializer):
+    username = serializers.CharField(
+        max_length=MAX_LENGTH,
+        validators=[UnicodeUsernameValidator(), validate_username]
+    )
+
+
+class SignUpSerializer(UsernameSerializer):
+    email = serializers.EmailField(
+        max_length=EMAIL_LEHGTH
+    )
+
+    def validate(self, validated_data):
+        email = validated_data.get('email')
+        username = validated_data.get('username')
+        user_email = User.objects.filter(email=email).first()
+        user_username = User.objects.filter(username=username).first()
+        if user_email != user_username:
+            error_msg = {
+                "username":[
+                    "Пользователь с таким username уже существует."
+                ],
+                "email":[
+                    "Пользователь с таким email уже существует."
+                ],
+            }
+            if user_username:
+                raise serializers.ValidationError(list(error_msg.items())[0])
+            if user_email:
+                raise serializers.ValidationError(list(error_msg.items())[1])
+            raise serializers.ValidationError(error_msg)
+        return validated_data
+
+
+class TokenSerializer(UsernameSerializer):
+    confirmation_code = serializers.CharField()
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = (
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'bio',
+            'role',
+        )
 
 
 class CategorySerializer(serializers.ModelSerializer):
