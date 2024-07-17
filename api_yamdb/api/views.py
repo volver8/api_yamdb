@@ -5,7 +5,11 @@ from rest_framework import (
     viewsets
 )
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticatedOrReadOnly,AllowAny, IsAuthenticated
+from rest_framework.permissions import (
+    IsAuthenticatedOrReadOnly,
+    AllowAny,
+    IsAuthenticated
+)
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
@@ -35,7 +39,6 @@ from .serializers import (
     TokenSerializer,
     UserSerializer
 )
-
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -132,7 +135,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         """Выбор сериализатора."""
 
-        if self.action in ('list', 'retrieve'):
+        if self.action in ['list', 'retrieve']:
             return TitleReadSerializer
         return TitleWriteSerializer
 

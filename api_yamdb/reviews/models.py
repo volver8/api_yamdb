@@ -21,7 +21,7 @@ class NameModel(models.Model):
         return self.name
 
 
-class SlugModel(models.Model):
+class SlugModel(NameModel, models.Model):
     """Модель поля слага."""
 
     slug = models.SlugField(
@@ -36,7 +36,7 @@ class SlugModel(models.Model):
         abstract = True
 
 
-class Category(NameModel, SlugModel):
+class Category(SlugModel):
     """Модель категории произведения."""
 
     class Meta:
@@ -47,7 +47,7 @@ class Category(NameModel, SlugModel):
         return self.name
 
 
-class Genre(NameModel, SlugModel):
+class Genre(SlugModel):
     """Модель жанра произведения."""
 
     class Meta:
@@ -61,7 +61,7 @@ class Genre(NameModel, SlugModel):
 class Title(NameModel):
     """Модель произведения."""
 
-    year = models.IntegerField(
+    year = models.SmallIntegerField(
         'Год произведения',
         validators=(validation_year, )
     )
@@ -96,7 +96,7 @@ class Title(NameModel):
 
 class Review(models.Model):
     """Модель отзыва."""
-    
+
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
@@ -126,7 +126,7 @@ class Review(models.Model):
 
 class Comment(models.Model):
     """Модель комментария."""
-    
+
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,

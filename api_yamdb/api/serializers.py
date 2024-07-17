@@ -28,10 +28,10 @@ class SignUpSerializer(UsernameSerializer):
         user_username = User.objects.filter(username=username).first()
         if user_email != user_username:
             error_msg = {
-                "username":[
+                "username": [
                     "Пользователь с таким username уже существует."
                 ],
-                "email":[
+                "email": [
                     "Пользователь с таким email уже существует."
                 ],
             }
@@ -106,6 +106,9 @@ class TitleReadSerializer(serializers.ModelSerializer):
     category = CategorySerializer()
     genre = GenreSerializer(
         many=True,
+        allow_null=True,
+        allow_empty=True
+
     )
     rating = serializers.IntegerField(allow_null=True)
 
