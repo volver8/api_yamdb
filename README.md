@@ -4,11 +4,6 @@
 *Данный проект предоставляет возможность создания произведений пользователями с разными правами доступа.*
 *Также можно выбрать критерии произведения, создать на них обзоры с комментариями.*
 
-## Документация проекта.
-*Адрес документации проекта:* [http://127.0.0.1:8000/redoc/](http://127.0.0.1:8000/redoc/)
-
-![](https://www.ibexa.co/var/site/storage/images/_aliases/ibexa_content_full/3/4/1/0/300143-1-eng-GB/d4255a27c1fa-AdobeStock_261705271_What-is-an-API.jpeg)
-
 ## Алгоритм запуска проекта.
 *Адрес репозитория:*
 ```
@@ -31,6 +26,14 @@ source venv/Scripts/activate
 ```
 pip install -r requirements.txt
 ```
+*Создать базу данных приложения rewiews*
+```
+python manage.py makemigrations rewiews
+```
+*Создать базу данных приложения users*
+```
+python manage.py makemigrations users
+```
 *Выполнить миграции:*
 ```
 python manage.py migrate
@@ -43,6 +46,10 @@ cd api_yamdb
 ```
 python manage.py runserver 
 ```
+## Документация проекта.
+*Документация проекта достпуна по локальному адресу после запуска сервера:* [http://127.0.0.1:8000/redoc/](http://127.0.0.1:8000/redoc/)
+
+![](https://www.ibexa.co/var/site/storage/images/_aliases/ibexa_content_full/3/4/1/0/300143-1-eng-GB/d4255a27c1fa-AdobeStock_261705271_What-is-an-API.jpeg)
 
 ## Импорт данных из csv.
 ```

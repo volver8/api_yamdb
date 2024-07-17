@@ -2,7 +2,8 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from .constants import NAME_LEN, SLUG_LEN
+
+from .constants import NAME_LEN, SLUG_LEN, MIN_RATING, MAX_RATING
 from .validators import validation_year
 
 
@@ -21,7 +22,7 @@ class NameModel(models.Model):
         return self.name
 
 
-class SlugModel(models.Model):
+class SlugModel(NameModel, models.Model):
     """Модель поля слага."""
 
     slug = models.SlugField(
@@ -36,7 +37,7 @@ class SlugModel(models.Model):
         abstract = True
 
 
-class Category(NameModel, SlugModel):
+class Category(SlugModel):
     """Модель категории произведения."""
 
     class Meta:
@@ -47,7 +48,7 @@ class Category(NameModel, SlugModel):
         return self.name
 
 
-class Genre(NameModel, SlugModel):
+class Genre(SlugModel):
     """Модель жанра произведения."""
 
     class Meta:
@@ -61,7 +62,7 @@ class Genre(NameModel, SlugModel):
 class Title(NameModel):
     """Модель произведения."""
 
-    year = models.IntegerField(
+    year = models.SmallIntegerField(
         'Год произведения',
         validators=(validation_year, )
     )
@@ -105,17 +106,25 @@ class Review(models.Model):
 
     text = models.TextField()
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='reviews'
+        User,
+        on_delete=models.CASCADE,
+        related_name='reviews'
     )
     score = models.IntegerField(
         validators=[
-            MaxValueValidator(10, message='Оценка не может быть выше 10!'),
-            MinValueValidator(1, message='Оценка не может быть ниже 1!')]
+            (MaxValueValidator(MAX_RATING,
+                               message=f'Оценка не выше {MAX_RATING}!')),
+            (MinValueValidator(MIN_RATING,
+                               message=f'Оценка не ниже {MIN_RATING}!'))]
     )
     pub_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('title', 'author',)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["title", "author"], name="Оценка не может быть одна"
+            )
+        ]
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
         ordering = ('pub_date',)
