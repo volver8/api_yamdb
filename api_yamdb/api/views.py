@@ -135,14 +135,14 @@ class TitleViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         """Выбор сериализатора."""
 
-        if self.action in ['list', 'retrieve']:
+        if self.action in ('list', 'retrieve'):
             return TitleReadSerializer
         return TitleWriteSerializer
 
     def get_queryset(self):
 
         """Набор произведений."""
-        if self.action in {'list', 'retrieve'}:
+        if self.action in ('list', 'retrieve'):
             return Title.objects.annotate(
                 rating=Avg('reviews__score')
             )
