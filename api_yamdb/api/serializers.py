@@ -86,11 +86,10 @@ class TitleWriteSerializer(serializers.ModelSerializer):
         slug_field='slug',
         queryset=Category.objects.all(),
     )
-    genre = serializers.SlugRelatedField(
+    genre = SlugRelatedField(
         slug_field='slug',
         queryset=Genre.objects.all(),
         many=True,
-        allow_empty=False,
     )
 
     class Meta:
@@ -111,7 +110,11 @@ class TitleReadSerializer(serializers.ModelSerializer):
     """Сериализатор произведений на чтение."""
 
     category = CategorySerializer()
-    genre = GenreSerializer(allow_null=True)
+    genre = GenreSerializer(
+        many=True,
+        allow_null=True,
+        allow_empty=True
+    )
     rating = serializers.IntegerField(allow_null=True)
 
     class Meta:
