@@ -10,21 +10,10 @@ from .validators import validation_year
 User = get_user_model()
 
 
-class NameModel(models.Model):
+class BaseModel(models.Model):
     """Модель поля имени."""
 
     name = models.CharField('Название', max_length=NAME_LEN)
-
-    class Meta:
-        abstract = True
-
-    def __str__(self):
-        return self.name
-
-
-class SlugModel(NameModel, models.Model):
-    """Модель поля слага."""
-
     slug = models.SlugField(
         'Идентификатор',
         max_length=SLUG_LEN,
@@ -36,8 +25,11 @@ class SlugModel(NameModel, models.Model):
     class Meta:
         abstract = True
 
+    def __str__(self):
+        return self.name
 
-class Category(SlugModel):
+
+class Category(BaseModel):
     """Модель категории произведения."""
 
     class Meta:
@@ -48,7 +40,7 @@ class Category(SlugModel):
         return self.name
 
 
-class Genre(SlugModel):
+class Genre(BaseModel):
     """Модель жанра произведения."""
 
     class Meta:
@@ -59,9 +51,10 @@ class Genre(SlugModel):
         return self.name
 
 
-class Title(NameModel):
+class Title(models.Model):
     """Модель произведения."""
 
+    name = models.CharField('Название', max_length=NAME_LEN)
     year = models.SmallIntegerField(
         'Год произведения',
         validators=(validation_year, )
@@ -122,7 +115,7 @@ class Review(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["title", "author"], name="Оценка не может быть одна"
+                fields=['title', 'author'], name='Оценка не может быть одна'
             )
         ]
         verbose_name = 'Отзыв'

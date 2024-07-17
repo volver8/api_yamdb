@@ -3,5 +3,5 @@ from django.conf import settings
 
 
 def validate_username(value):
-    if value in settings.STOP_ENDPOINT_NAME_LIST:
+    if value in settings.BAD_USERNAMES:
         raise ValidationError(f'Имя "{value}" использовать нельзя')

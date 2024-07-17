@@ -36,9 +36,11 @@ class SignUpSerializer(UsernameSerializer):
                 ],
             }
             if user_username:
-                raise serializers.ValidationError(list(error_msg.items())[0])
+                error_msg['username'] = ('Пользователь с таким username'
+                                         'уже существует.')
             if user_email:
-                raise serializers.ValidationError(list(error_msg.items())[1])
+                error_msg['email'] = ('Пользователь с таким email'
+                                      'уже существует.')
             raise serializers.ValidationError(error_msg)
         return validated_data
 
@@ -84,32 +86,32 @@ class TitleWriteSerializer(serializers.ModelSerializer):
         slug_field='slug',
         queryset=Category.objects.all(),
     )
-    genre = SlugRelatedField(
+    genre = serializers.SlugRelatedField(
         slug_field='slug',
         queryset=Genre.objects.all(),
         many=True,
+        allow_empty=False,
     )
 
     class Meta:
         model = Title
-        fields = ('name', 'year', 'description', 'genre', 'category')
+        fields = ('name',
+                  'year',
+                  'description',
+                  'genre',
+                  'category')
 
     def to_representation(self, instance):
         """Представление объекта."""
-
-        return TitleReadSerializer().to_representation(instance)
+        return (TitleReadSerializer(self, context=self.context)
+                .to_representation(instance))
 
 
 class TitleReadSerializer(serializers.ModelSerializer):
     """Сериализатор произведений на чтение."""
 
     category = CategorySerializer()
-    genre = GenreSerializer(
-        many=True,
-        allow_null=True,
-        allow_empty=True
-
-    )
+    genre = GenreSerializer(allow_null=True)
     rating = serializers.IntegerField(allow_null=True)
 
     class Meta:
