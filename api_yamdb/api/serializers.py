@@ -27,14 +27,7 @@ class SignUpSerializer(UsernameSerializer):
         user_email = User.objects.filter(email=email).first()
         user_username = User.objects.filter(username=username).first()
         if user_email != user_username:
-            error_msg = {
-                "username": [
-                    "Пользователь с таким username уже существует."
-                ],
-                "email": [
-                    "Пользователь с таким email уже существует."
-                ],
-            }
+            error_msg = {}
             if user_username:
                 error_msg['username'] = ('Пользователь с таким username'
                                          'уже существует.')
