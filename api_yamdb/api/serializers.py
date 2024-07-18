@@ -83,6 +83,8 @@ class TitleWriteSerializer(serializers.ModelSerializer):
         slug_field='slug',
         queryset=Genre.objects.all(),
         many=True,
+        allow_null=True,
+        allow_empty=False,
     )
 
     class Meta:

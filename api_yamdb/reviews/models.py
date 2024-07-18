@@ -10,8 +10,8 @@ from .validators import validation_year
 User = get_user_model()
 
 
-class BaseModel(models.Model):
-    """Модель поля имени."""
+class NameSlugBaseModel(models.Model):
+    """Абстрактная модель для полей имени и слага."""
 
     name = models.CharField('Название', max_length=NAME_LEN)
     slug = models.SlugField(
@@ -29,7 +29,7 @@ class BaseModel(models.Model):
         return self.name
 
 
-class Category(BaseModel):
+class Category(NameSlugBaseModel):
     """Модель категории произведения."""
 
     class Meta:
@@ -40,7 +40,7 @@ class Category(BaseModel):
         return self.name
 
 
-class Genre(BaseModel):
+class Genre(NameSlugBaseModel):
     """Модель жанра произведения."""
 
     class Meta:
